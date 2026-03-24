@@ -2,6 +2,7 @@ package com.example.login.config;
 
 import com.example.login.service.AppUserDetailsService;
 import com.example.login.util.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -76,10 +77,12 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                 }
 
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Invalid or expired token");
-                return;
+            } catch (JwtException e) {
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                response.getWriter().write("Invalid or expired tokens");
+//                return;
+                logger.warn("Invalid JWT token: {}", e.getMessage());
+                SecurityContextHolder.clearContext();
             }
         }
 

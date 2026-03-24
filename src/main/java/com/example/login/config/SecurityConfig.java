@@ -30,9 +30,10 @@ public class SecurityConfig {
     }
 
     private final JwtFilter jwtFilter;
-
-    public SecurityConfig(JwtFilter jwtFilter) {
+    private final CustomAuthenticationEntryPoint entryPoint;
+    public SecurityConfig(JwtFilter jwtFilter, CustomAuthenticationEntryPoint entryPoint) {
         this.jwtFilter = jwtFilter;
+        this.entryPoint = entryPoint;
     }
 
     // 🔐 Main Security Configuration
@@ -60,7 +61,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(entryPoint)
+                );
 
         return http.build();
     }
