@@ -93,4 +93,47 @@ public class EmailService {
             throw new RuntimeException("Unable to send OTP email", e);
         }
     }
+
+    public void sendOtpEmail(String toEmail, String otp) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Account Verification OTP");
+
+            String content = """
+            <html>
+            <body style="font-family: Arial, sans-serif; background-color:#f4f4f4; padding:20px;">
+                <div style="max-width:600px; margin:auto; background:white; padding:20px; border-radius:10px; text-align:center;">
+                    
+                    <h2 style="color:#333;">Verify Your Account</h2>
+                    <p>Use the OTP below to verify your email address:</p>
+                    
+                    <div style="font-size:28px; font-weight:bold; color:#2196F3; margin:20px 0;">
+                        %s
+                    </div>
+
+                    <p style="color:#888;">This OTP is valid for <b>5 minutes</b>.</p>
+
+                    <br>
+                    <p style="font-size:12px; color:#aaa;">
+                        If you didn’t create this account, please ignore this email.
+                    </p>
+
+                    <p style="color:#555;">Regards,<br><b>Auth Team</b></p>
+                </div>
+            </body>
+            </html>
+            """.formatted(otp);
+
+            helper.setText(content, true); // HTML enabled
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to send verification OTP email", e);
+        }
+    }
 }
